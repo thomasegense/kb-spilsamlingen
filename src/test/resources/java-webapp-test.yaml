@@ -1,0 +1,3 @@
+config:
+  openapi:
+    injection: THIS IS A TEST STRING, DYNAMICALLY INJECTED TO THE OPENAPI SPEC.
