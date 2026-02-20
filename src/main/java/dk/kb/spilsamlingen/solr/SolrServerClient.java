@@ -94,7 +94,10 @@ public class SolrServerClient {
            Object values= fields.get(key);
            
            if (values instanceof String) {
-            doc.setField(key,(String) values);            
+               String valueStr=(String) values;
+               if (values != null && !"".equals(valueStr.trim())) {
+                    doc.setField(key,valueStr);            
+               }
            }
            else if (values instanceof List) {
                List<String> valueList = (List<String>) values;

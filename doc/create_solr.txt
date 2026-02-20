@@ -3,12 +3,11 @@
  ./bin/solr create_collection -c spilsamlingen -d /home/teg/solr-9.10.0/collection_confs/spilsamlingen_conf/spilsamlingen -n spilsamlingen_conf1 -shards 1
  
 Delete collection with:
-./bin/solr delete -c transcriptions
- 
+./bin/solr delete -c spilsamlingen
  
  
 And then index.
 Flush instead of wait for auto flush
-http://localhost:8983/solr/transcriptions/update?commit=true
+http://localhost:8983/solr/spilsamlingen/update?commit=true&openSearcher=true
  
  

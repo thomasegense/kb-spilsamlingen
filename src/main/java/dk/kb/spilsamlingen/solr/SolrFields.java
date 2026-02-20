@@ -78,11 +78,12 @@ public class SolrFields {
     public final static String PLUS4_WORLD="plus4_world";
     public final static String WORLD_OF_SPECTRUM="world_of_spectrum";    
     public final static String COMPLETE_BBC_MICRO_GAMES_ARCHIVE="complete_bbc_micro_games_archive";
+    public final static String CASA="casa";
     public final static String TU_ID="tu_id";    
     public final static String IF_ID="if_id";
     public final static String IF_WIKI="if_wiki";
     public final static String VNDB="vndb";
-    public final static String SOFTWARE_REQUIREMENTS="software_requirements";
+    public final static String SOFTWARE_REQUIREMENT="software_requirement";
     public final static String HARDWARE_REQUIREMENTS="hardware_requirements";
     public final static String INPUT_DEVICE="input_device";
     public final static String TILFOEJET_AF="tilfoejet_af";
