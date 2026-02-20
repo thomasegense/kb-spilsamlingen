@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Important! READ before making changes to the schema.
+Since we are using schema.xml and not managed-schema.xml all filters defined
+has to be loaded by class and not by name parameter.
+Read about this bug: https://issues.apache.org/jira/browse/SOLR-16203
+
+In solrconfig.xml the classic schema is defined with this:  <schemaFactory class="ClassicIndexSchemaFactory"/>
+
+When adding fields to this schema please have the following guidelines in mind:
+- When adding a multiv ./bin/solr create_collection -c transcriptions -d /home/teg/solr-9.10.0/collection_confs/transcriptions_conf/transcriptions -n transcriptions_conf1 -shards 1alued field also add a 'fieldname_count' field containing the count of entries in the created field.
+- When adding an analyzed text field also add a 'fieldname_length' field containing the length of the textual entry in the created field.
+-->
+
+<!-- TODO: Add query examples where they apply. -->
+<?summary TODO ?>
+
+<schema name="example" version="1.6">
+
+
+  <field name="_spilsamlingen_1.0.0_" type="solr.StrField" indexed="false" stored="false"/>
+  <uniqueKey>id</uniqueKey>
+
+   <!-- START FIELDS  -->
+   <!-- Default solr field -->
+  <field name="_version_" type="plong" indexed="false" stored="false"/>
+  
+  <field name="id" type="solr.StrField" multiValued="false" required="true">  </field>
+ 
+  
+  <field name="inst" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+  <field name="pref" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="spil_id" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+  <field name="aar" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+  <field name="titel" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="platform" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+  <field name="platform_os_version" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+  <field name="udvikler" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="udgiver" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="spillets_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="udviklers_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="omtale_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="anmeldelse_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="video" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="metascore" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="genre" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+  <field name="noter" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="cover" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="unikke_titler" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="fysisk_medie" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="online" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="mobile_portal" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="konsolportal_steam" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="sorterings_aar" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="i_netarkivet" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="netarkivering_noter" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="itunes_info" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="alternative_titler" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="medieformat" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+  <field name="datamedie" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="gamejam_spil" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="arrangement" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="arrangement_spil" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="tast_selv_spil" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="printet_i" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="kildekode" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="kildekode_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="licens" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="licens_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="serie" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="tags" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="barcode" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="isbn" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="ean" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="opstilling" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="dfi_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="wikidata_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="apple_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="google_play_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="steam_app_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="gog_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="mobygames_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="playright_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="igdb_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="uvlist_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="giantbomb_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="ogdb_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="indie_db" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="itch_i_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="gamejolt_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="ludum_data_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="ludum_dare_url" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="newgrounds_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="playstation_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="microsoft_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="nintendo_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="pocket_gamer_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="metacritic_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="imdb_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="hall_of_light" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="lemon_amiga" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="lemon_64" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="gamebase_64" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="plus4_world" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="world_of_spectrum" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="complete_bbc_micro_games_archive" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="tu_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="if_id" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="if_wiki" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="vndb" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="software_requirement" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="hardware_requirements" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="input_device" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="tilfoejet_af" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="redigeret_af" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="sidst_opdateret" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="udstillingens_historie" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="accessions_maade" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="accessions_dato" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="awards" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="inklusions_grund" type="text_general" multiValued="false" stored="true" required="false">  </field>
+  <field name="alma_id" type="text_strict" multiValued="false" stored="true" required="false">  </field>
+    
+  <field name="freetext" type="freetext" multiValued="true" stored="false"> </field>
+
+  <!-- END FIELDS  -->
+
+  <!-- START FIELDTYPE DEFINITIONS-->
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+  <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
+  <fieldType name="pint" class="solr.IntPointField" multiValued="false" indexed="true" required="false" stored="true" docValues="false"/>
+  <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+
+  <!-- Field is not analysed or tokenized. Used for author names, titles etc.
+   This field is not usefull as search field, but good for docValues  -->
+  <fieldType name="solr.StrField" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
+
+
+  <fieldType name="text_strict" class="solr.TextField" multiValued="true" indexed="true" required="false" stored="true">
+    <analyzer type="index">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+    <!-- Highly analysed text field with stopwords and synonym. -->
+  <fieldType name="text_general" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true"  termVectors="true" storeOffsetsWithPositions="true">
+    <analyzer type="index">
+       <tokenizer class="solr.StandardTokenizerFactory"/>
+       <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>                
+    </analyzer>
+  </fieldType>
+  
+
+  <!-- Field to 'catch em all' if not matched in specific fields. Last resort for matching. Ranking will be lower if they are only matched here. -->
+   <fieldType name="freetext" class="solr.TextField" multiValued="false" indexed="true" required="false" stored="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>           
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>       
+    </analyzer>
+  </fieldType>
+
+
+
+  <!-- END FIELDTYPE DEFINITIONS-->
+
+  <!-- START COPYFIELDS  -->
+
+  <copyField source="titel" dest="freetext"/>
+  <copyField source="udvikler" dest="freetext"/>
+  <copyField source="udgiver" dest="freetext"/>
+  <copyField source="noter" dest="freetext"/>
+
+
+  <!-- END COPYFIELDS  -->
+ </schema>
