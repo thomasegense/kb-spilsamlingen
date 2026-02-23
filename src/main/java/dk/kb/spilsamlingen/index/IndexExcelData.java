@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,9 +35,9 @@ public class IndexExcelData {
     private static List<CSVRecord> getCsvData(String fileName) throws IOException {
         File csvFile = new File(fileName);
         
-        FileReader reader = null;
+        FileReader reader = new FileReader(csvFile, Charset.forName("ISO-8859-1"));
         try {
-            reader = new FileReader(csvFile, Charset.forName("ISO-8859-1"));
+ 
             CSVFormat format = CSVFormat.Builder.create().setDelimiter(';').build();
             Iterable<CSVRecord> recordsIt = format.parse(reader);
             
@@ -80,7 +81,7 @@ public class IndexExcelData {
             HashMap<String,Object> fields= new HashMap<String,Object>(); 
             int column = 0;
             try {
-                
+             
                 String id=""+i;
                 fields.put(SolrFields.ID,id);//Solr identifier
                 
@@ -743,7 +744,7 @@ public class IndexExcelData {
                 System.out.println("adding doc with id:"+id);
                 client.addDocument(fields);
                 indexed++;                
-                
+
                 
 //                System.out.println("------------------------");
             } catch (Exception e) {

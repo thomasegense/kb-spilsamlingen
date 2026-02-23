@@ -42,7 +42,7 @@ public class SolrServerClient {
     
     public static void main(String[] args) throws Exception{
         SolrServerClient client = new SolrServerClient("http://localhost:8983/solr/transcription/");
-        
+
      
         System.out.println("got json:");
         
@@ -63,8 +63,9 @@ public class SolrServerClient {
     public SolrServerClient(String serverUrl) {
         try {
             this.serverUrl = serverUrl;
-            solrServer = new HttpSolrClient.Builder(serverUrl).build();
-   //         solrServer.setParser(new NoOpResponseParser("json"));
+            solrServer = new HttpSolrClient.Builder(serverUrl).build();            
+            //         solrServer.setParser(new NoOpResponseParser("json"));
+            
    
         } catch (RuntimeException e) {
             log.error("Unable to connect to solr-server: {}", serverUrl, e);
@@ -97,19 +98,24 @@ public class SolrServerClient {
                String valueStr=(String) values;               
                
                if (values != null && !"".equals(valueStr.trim())) {
-                    doc.setField(key,valueStr.getBytes("UTF-8"));            
+if (key.equals("title")) {
+    System.out.println("indexing title:"+valueStr);
+}
+
+                   doc.setField(key,valueStr);            
                }
            }
            else if (values instanceof List) {
                List<String> valueList = (List<String>) values;
                for (String value: valueList) {
-                 doc.addField(key, value.getBytes("UTF-8"));                   
+                 doc.addField(key, value);                   
                }
                
                
            }
             
         }               
+
         UpdateResponse updateResponse = solrServer.add(doc,0);
      System.out.println(updateResponse);
         //embeddedServer.commit();   
