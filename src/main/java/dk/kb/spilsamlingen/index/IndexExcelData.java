@@ -37,8 +37,8 @@ public class IndexExcelData {
         FileReader reader = null;
         try {
             reader = new FileReader(csvFile, Charset.forName("ISO-8859-1"));
-            CSVFormat format = CSVFormat.Builder.create().setDelimiter(new Character(';')).build();
-            Iterable<CSVRecord> recordsIt = format.parse(new FileReader(fileName));
+            CSVFormat format = CSVFormat.Builder.create().setDelimiter(';').build();
+            Iterable<CSVRecord> recordsIt = format.parse(new FileReader(fileName,Charset.forName("UTF-8")));
             
             List<CSVRecord> recordList = convert(recordsIt);
             System.out.println("size:"+recordList.size());
