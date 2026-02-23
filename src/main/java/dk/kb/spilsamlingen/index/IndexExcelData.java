@@ -38,7 +38,7 @@ public class IndexExcelData {
         try {
             reader = new FileReader(csvFile, Charset.forName("ISO-8859-1"));
             CSVFormat format = CSVFormat.Builder.create().setDelimiter(';').build();
-            Iterable<CSVRecord> recordsIt = format.parse(new FileReader(fileName,Charset.forName("UTF-8")));
+            Iterable<CSVRecord> recordsIt = format.parse(reader);
             
             List<CSVRecord> recordList = convert(recordsIt);
             System.out.println("size:"+recordList.size());
@@ -75,6 +75,7 @@ public class IndexExcelData {
         
         String titleTemp=null;
         CSVRecord header = csvRecords.get(0);
+        int indexed=0;
         for (int i = 1; i < csvRecords.size(); i++) { // Skipping header index 0
             HashMap<String,Object> fields= new HashMap<String,Object>(); 
             int column = 0;
@@ -116,7 +117,8 @@ public class IndexExcelData {
                 // Title
                 headerValue = header.get(column);
                 value = r.get(column);
-                //System.out.println(i + ":" + headerValue + ":" + value);
+                System.out.println(i + ":" + headerValue + ":" + value);
+
                 fields.put(SolrFields.TITEL,value);
                 titleTemp=value;
                 column++;
@@ -740,7 +742,7 @@ public class IndexExcelData {
                 
                 System.out.println("adding doc with id:"+id);
                 client.addDocument(fields);
-                
+                indexed++;                
                 
                 
 //                System.out.println("------------------------");
@@ -748,8 +750,10 @@ public class IndexExcelData {
                 System.out.println("Error parsing row:"+ i +" with title:"+titleTemp+" colum" + column + " :" + e.getMessage());
 
             }
+           
 
         }
+        System.out.println("Index finished. #docs="+indexed);
 
     }
 

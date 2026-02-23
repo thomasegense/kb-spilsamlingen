@@ -94,15 +94,16 @@ public class SolrServerClient {
            Object values= fields.get(key);
            
            if (values instanceof String) {
-               String valueStr=(String) values;
+               String valueStr=(String) values;               
+               
                if (values != null && !"".equals(valueStr.trim())) {
-                    doc.setField(key,valueStr);            
+                    doc.setField(key,valueStr.getBytes("UTF-8"));            
                }
            }
            else if (values instanceof List) {
                List<String> valueList = (List<String>) values;
                for (String value: valueList) {
-                 doc.addField(key, value);                   
+                 doc.addField(key, value.getBytes("UTF-8"));                   
                }
                
                
