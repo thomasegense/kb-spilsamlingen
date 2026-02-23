@@ -43,7 +43,7 @@ public class ServiceConfig extends AutoYAML {
     /**
      * Construct a ServiceConfig without a concrete YAML assigned. In order to use the ServiceConfig,
      * {@link #initialize(String)} must be called. This is done automatically when the container is started
-     * in {@link dk.kb.spilsamlingen.webservice.ContextListener#contextInitialized(ServletContextEvent)}, which
+     * in {@link dk.kb.transcriptions.webservice.ContextListener#contextInitialized(ServletContextEvent)}, which
      * takes the glob for the configurations from the property {@code application-config}.
      * @throws IOException if initialization failed.
      */

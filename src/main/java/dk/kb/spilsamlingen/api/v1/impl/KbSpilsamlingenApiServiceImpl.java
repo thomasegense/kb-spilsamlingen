@@ -61,7 +61,7 @@ public class KbSpilsamlingenApiServiceImpl extends ImplBase implements KbSpilsam
 
         try {
           //  String solrUrl= ServiceConfig.getSolrUrl();
-            String solrUrl="http://localhost:8983/solr/transcriptions/";
+            String solrUrl="http://localhost:8983/solr/spilsamlingen/";
             SolrServerClient client = new SolrServerClient(solrUrl); 
             return client.searchJsonResponse(q);
         } catch (Exception e) {
