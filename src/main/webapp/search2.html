@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Solr Search — Retro Edition</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h1 { text-align: center; margin-bottom: 1rem; }
+
+#searchBox {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+.layout { display: flex; align-items: flex-start; gap: 1rem; }
+
+.facets {
+  flex: 0 0 250px;
+  background: #f8f9fb;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+.results {
+  flex: 1;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  min-height: 300px;
+  position: relative;
+}
+
+.result-item { padding: 0.6rem 0; border-bottom: 1px solid #e6e9ee; }
+.result-item:last-child { border-bottom: none; }
+
+.field-name { font-weight: 600; display: inline-block; min-width: 180px; }
+.field-meta { font-size: 0.85rem; color: #666; margin-left: 6px; }
+.field-value { display: inline-block; vertical-align: top; max-width: 740px; word-break: break-word; }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.page-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  cursor: pointer;
+}
+
+.page-btn:hover { background: #e9eefb; }
+
+/* ===== RETRO EFFECTS ===== */
+
+.retro-layer {
+  position: absolute;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.pacman {
+  width: 30px;
+  height: 30px;
+  background: yellow;
+  border-radius: 50%;
+  position: absolute;
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+}
+
+.tetris-block {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+}
+
+.invader {
+  position: absolute;
+  font-size: 22px;
+  color: #00ff00;
+  font-weight: bold;
+  font-family: monospace;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Solr Search</h1>
+
+<input id="searchBox" type="text" placeholder="Enter query and press Enter (e.g. *:*)" />
+
+<div class="layout">
+  <div id="facets" class="facets"></div>
+  <div id="results" class="results"></div>
+</div>
+
+<script>
+
+const SOLR_URL = "http://localhost:8080/kb-spilsamlingen/v1/search";
+const ROWS_PER_PAGE = 10;
+
+let currentQuery = "*:*";
+let currentStart = 0;
+let totalFound = 0;
+
+const searchBox = document.getElementById('searchBox');
+const resultsDiv = document.getElementById('results');
+const facetsDiv = document.getElementById('facets');
+
+searchBox.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    currentQuery = searchBox.value || '*:*';
+    currentStart = 0;
+    performSearch();
+  }
+});
+
+async function performSearch() {
+  resultsDiv.innerHTML = 'Loading...';
+  facetsDiv.innerHTML = '';
+
+  const params = new URLSearchParams({
+    q: currentQuery,
+    wt: 'json',
+    rows: ROWS_PER_PAGE.toString(),
+    start: currentStart.toString()
+  });
+
+  try {
+    const res = await fetch(`${SOLR_URL}?${params.toString()}`);
+    const data = await res.json();
+    totalFound = data.response.numFound || 0;
+    renderResults(data.response);
+  } catch (err) {
+    resultsDiv.innerHTML = `<span style="color:crimson">Error: ${err.message}</span>`;
+  }
+}
+
+function renderResults(response) {
+  const docs = response.docs || [];
+
+  if (!docs.length) {
+    resultsDiv.innerHTML = "<em>No results</em>";
+    return;
+  }
+
+  const header = `<div><strong>Showing ${currentStart + 1}-${currentStart + docs.length} of ${totalFound}</strong></div>`;
+
+  const body = docs.map((doc, idx) =>
+    `<div class="result-item">
+      <strong>Document ${currentStart + idx + 1}</strong>
+      <pre>${escapeHtml(JSON.stringify(doc, null, 2))}</pre>
+    </div>`
+  ).join("");
+
+  resultsDiv.innerHTML = header + body + renderPagination();
+
+  triggerRetroEffect();   // 🎮 Hooked here
+}
+
+function renderPagination() {
+  const prevDisabled = currentStart <= 0;
+  const nextDisabled = currentStart + ROWS_PER_PAGE >= totalFound;
+
+  return `
+    <div class="pagination">
+      <button class="page-btn" ${prevDisabled ? 'disabled' : ''} onclick="changePage(-1)">Previous</button>
+      <button class="page-btn" ${nextDisabled ? 'disabled' : ''} onclick="changePage(1)">Next</button>
+    </div>
+  `;
+}
+
+function changePage(direction) {
+  const newStart = currentStart + direction * ROWS_PER_PAGE;
+  if (newStart < 0 || newStart >= totalFound) return;
+  currentStart = newStart;
+  performSearch();
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/* ===========================
+   RETRO EFFECTS ENGINE
+=========================== */
+
+function triggerRetroEffect() {
+  const effects = [pacmanEffect, tetrisEffect, invaderEffect];
+  if (Math.random() < 0.35) {
+    effects[Math.floor(Math.random() * effects.length)]();
+  }
+}
+
+/* PACMAN */
+function pacmanEffect() {
+  const rect = searchBox.getBoundingClientRect();
+  const pac = document.createElement("div");
+  pac.className = "pacman retro-layer";
+  document.body.appendChild(pac);
+
+  let x = rect.left - 40;
+  const y = rect.top + rect.height / 2 - 15;
+  pac.style.top = y + "px";
+
+  function animate() {
+    x += 4;
+    pac.style.left = x + "px";
+    if (x < rect.right) requestAnimationFrame(animate);
+    else pac.remove();
+  }
+  animate();
+}
+
+/* TETRIS */
+function tetrisEffect() {
+  const rect = resultsDiv.getBoundingClientRect();
+  const colors = ["#ff4d4d","#00ccff","#ffaa00","#66ff66","#cc66ff"];
+
+  for (let i = 0; i < 6; i++) {
+    const block = document.createElement("div");
+    block.className = "tetris-block retro-layer";
+    block.style.background = colors[Math.floor(Math.random()*colors.length)];
+    block.style.left = rect.left + Math.random()*rect.width + "px";
+    block.style.top = rect.top - 30 + "px";
+    document.body.appendChild(block);
+
+    let y = rect.top - 30;
+    function fall() {
+      y += 6;
+      block.style.top = y + "px";
+      if (y < rect.bottom - 30) requestAnimationFrame(fall);
+      else setTimeout(()=>block.remove(), 400);
+    }
+    fall();
+  }
+}
+
+/* SPACE INVADERS */
+function invaderEffect() {
+  const rect = resultsDiv.getBoundingClientRect();
+
+  for (let i = 0; i < 5; i++) {
+    const inv = document.createElement("div");
+    inv.className = "invader retro-layer";
+    inv.textContent = "👾";
+    inv.style.left = rect.left + Math.random()*rect.width + "px";
+    inv.style.top = rect.top - 40 + "px";
+    document.body.appendChild(inv);
+
+    let y = rect.top - 40;
+    function descend() {
+      y += 3;
+      inv.style.top = y + "px";
+      if (y < rect.top + 150) requestAnimationFrame(descend);
+      else setTimeout(()=>inv.remove(), 400);
+    }
+    descend();
+  }
+}
+
+</script>
+
+</body>
+</html>

@@ -41,7 +41,7 @@ public class SolrServerClient {
     protected HttpSolrClient solrServer; 
     
     public static void main(String[] args) throws Exception{
-        SolrServerClient client = new SolrServerClient("http://localhost:8983/solr/transcription/");
+        SolrServerClient client = new SolrServerClient("http://localhost:8983/solr/spilsamlingen/");
 
      
         System.out.println("got json:");
@@ -98,10 +98,6 @@ public class SolrServerClient {
                String valueStr=(String) values;               
                
                if (values != null && !"".equals(valueStr.trim())) {
-if (key.equals("title")) {
-    System.out.println("indexing title:"+valueStr);
-}
-
                    doc.setField(key,valueStr);            
                }
            }
