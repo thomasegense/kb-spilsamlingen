@@ -30,6 +30,22 @@ paths:
               required: true
               schema:
                 type: string                
+            - name: rows
+              in: query
+              description: 'rows'
+              required: false
+              schema:
+                type: integer
+                format: int32            
+            - name: start
+              in: query
+              description: 'start'
+              required: false
+              schema:
+                type: integer
+                format: int32            
+
+                
       responses:
               '200':
                 description: A successful response returning a string

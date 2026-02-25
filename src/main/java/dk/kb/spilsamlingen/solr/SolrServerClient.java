@@ -46,7 +46,7 @@ public class SolrServerClient {
      
         System.out.println("got json:");
         
-        String json = client.searchJsonResponse("*:*");
+        String json = client.searchJsonResponse("*:*",10,0);
         Thread.sleep(5000L);
         System.out.println("got json:"+json);
     }
@@ -117,12 +117,19 @@ public class SolrServerClient {
         //embeddedServer.commit();   
     }
 
-   public String searchJsonResponse(String queryStr) throws Exception{
+   public String searchJsonResponse(String queryStr, Integer rows, Integer start) throws Exception{
        SolrQuery query = new SolrQuery();
        query.set("q", queryStr);        
        query.setRows(10);
        query.set("facet", "true");
        query.set("wt", "json");
+       if (rows != null) {
+           query.setRows(rows);
+       }
+       if (start != null) {
+           query.setStart(start);
+       }
+       
        //we want fields returned in this order. This is all fields (49)
        //but does not work. Solr determine order of fields.
        //query.set("fl","score,id,warc_date_header,warc_info_id,content_length,warc_block_digest,content_type,warc_target_uri,source_file_offset,source_file_path,title_mods,title_pb_core,access_condition,file_size_premis,file_id,parent,parent_type,parent_sub_type,parent_collection,child,format_location_pb_core,format_media_type_pb_core,format_standard_pb_core,format_colors_pb_core,format_channel_configuration_pb_core,format_identifier_pb_core,format_identifier_source_pb_core,format_name_premis,format_version_premis,format_registry_name_premis,format_registry_key_premis,format_note_premis,mets_version,mets_type,mets_creator,mods_version,date_created_mods,description_mods,pid_handle,identifier_pb_core,identifier_source_pb_core,description_pb_core,genre_pb_core,publisher_pb_core,date_available_start_pb_core,date_available_end_pb_core,premis_version,checksum_algorithm_premis,checksum_premis,_version_");

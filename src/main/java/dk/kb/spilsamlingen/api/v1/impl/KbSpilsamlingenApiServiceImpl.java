@@ -57,13 +57,13 @@ public class KbSpilsamlingenApiServiceImpl extends ImplBase implements KbSpilsam
     private Logger log = LoggerFactory.getLogger(this.toString());
 
     @Override
-    public String search(String q) throws ServiceException {
+    public String search(String q, Integer rows, Integer start) throws ServiceException {
 
         try {
           //  String solrUrl= ServiceConfig.getSolrUrl();
             String solrUrl="http://teg-workstation.sb.statsbiblioteket.dk:8983/solr/spilsamlingen/";
             SolrServerClient client = new SolrServerClient(solrUrl); 
-            return client.searchJsonResponse(q);
+            return client.searchJsonResponse(q, rows , start);
         } catch (Exception e) {
             e.printStackTrace();
             throw new InternalServiceException(e.getMessage());
