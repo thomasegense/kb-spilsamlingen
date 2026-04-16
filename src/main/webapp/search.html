@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Solr Search — Pagination + Pinned Tooltip</title>
+  <title>Spilsamlingen Search — Pagination + Pinned Tooltip</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     body {
@@ -130,7 +130,7 @@
   </style>
 </head>
 <body>
-  <h1>Solr Search</h1>
+  <h1>Spilsamlingen Search</h1>
 
   <input id="searchBox" type="text" placeholder="Enter query and press Enter (e.g. *:*)" />
 
@@ -142,7 +142,7 @@
   <div id="tooltip" class="tooltip-box"></div>
 
   <script>
-    const SOLR_URL = "http://localhost:8081/kb-spilsamlingen/v1/search";
+    const SOLR_URL = "http://teg-workstation.sb.statsbiblioteket.dk:8080/kb-spilsamlingen/v1/search";
     const ROWS_PER_PAGE = 10;
     let currentQuery = "*:*";
     let currentStart = 0;
