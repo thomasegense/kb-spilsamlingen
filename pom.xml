@@ -476,7 +476,7 @@
                         <jettyEnvXml>${project.basedir}/target/jetty-res/jetty-env.xml</jettyEnvXml>
                     </webApp>
                     <httpConnector>
-                        <port>8080</port>
+                        <port>8081</port>
                     </httpConnector>
                 </configuration>
             </plugin>

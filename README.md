@@ -25,10 +25,10 @@ Test the webservice with
 mvn jetty:run
 ```
 
-The default port is 8080 and the default Hello World service can be accessed at
-<http://localhost:8080/kb-spilsamlingen/v1/hello>
+The default port is 8081 and the default searchpage:
+<http://http://localhost:8081/kb-spilsamlingen/search2.html/>
 
-The Swagger UI is available at <http://localhost:8080/kb-spilsamlingen/api/>, providing access to both the `v1` and the 
+The Swagger UI is available at <http://localhost:8081/kb-spilsamlingen/api/>, providing access to both the `v1` and the 
 `devel` versions of the GUI. 
 
 See the file [DEVELOPER.md](DEVELOPER.md) for developer specific details and how to deploy to tomcat.
