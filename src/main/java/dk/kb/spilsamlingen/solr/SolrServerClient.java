@@ -41,7 +41,7 @@ public class SolrServerClient {
     protected HttpSolrClient solrServer; 
     
     public static void main(String[] args) throws Exception{
-        SolrServerClient client = new SolrServerClient("http://localhost:8983/solr/spilsamlingen/");
+        SolrServerClient client = new SolrServerClient("http://teg-workstation:8983/solr/spilsamlingen/");
 
      
         System.out.println("got json:");
