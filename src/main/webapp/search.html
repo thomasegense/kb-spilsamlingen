@@ -44,6 +44,27 @@
 
     .result-item { padding: 0.6rem 0; border-bottom: 1px solid #e6e9ee; }
     .result-item:last-child { border-bottom: none; }
+    .game-thumb {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 160px;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #f0f0f0;
+      margin: 0 0 10px 0;
+    }
+    .game-thumb.no-image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      font-size: 0.75rem;
+      text-align: center;
+      padding: 4px;
+    }
     .field-name { font-weight: 600; display: inline-block; min-width: 180px; }
     .field-meta { font-size: 0.85rem; color: #666; margin-left: 6px; }
     .field-value { display: inline-block; vertical-align: top; max-width: 740px; word-break: break-word; position: relative; }
@@ -123,6 +144,26 @@
       box-shadow: 0 2px 12px rgba(0, 0, 255, 0.25);
     }
 
+    /* Full-size image modal */
+    .image-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .image-modal-overlay img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+    }
+    .game-thumb:not(.no-image) { cursor: pointer; }
+
     @media (max-width: 800px) {
       .layout { flex-direction: column; }
       .facets { flex: 1; max-height: none; order: -1; }
@@ -141,8 +182,12 @@
 
   <div id="tooltip" class="tooltip-box"></div>
 
+  <div id="imageModalOverlay" class="image-modal-overlay" onclick="closeImageModal()">
+    <img id="imageModalImg" src="" alt="Full size cover" />
+  </div>
+
   <script>
-    const SOLR_URL = "http://teg-workstation.sb.statsbiblioteket.dk:8080/kb-spilsamlingen/v1/search";
+    const SOLR_URL = "http://localhost:8080/kb-spilsamlingen/v1/search";
     const ROWS_PER_PAGE = 10;
     let currentQuery = "*:*";
     let currentStart = 0;
@@ -256,18 +301,73 @@
       performSearch();
     }
 
+    // Extensions to try, in order, for a game's cover image.
+    const IMAGE_EXTENSIONS = ['jpg', 'png', 'gif', 'webp'];
+
+    function getSpilId(doc) {
+      let v = doc.spil_id;
+      if (Array.isArray(v)) v = v[0];
+      if (v === null || v === undefined || v === '') return null;
+      return String(v);
+    }
+
+    function renderThumb(spilId, uniqueId) {
+      if (!spilId) {
+        return `<div class="game-thumb no-image">No image</div>`;
+      }
+      // data-ext-index tracks which extension we're currently trying via onerror.
+      return `<img id="${uniqueId}" class="game-thumb" data-spil-id="${escapeHtml(spilId)}" data-ext-index="0"
+                   src="images/${encodeURIComponent(spilId)}_1.${IMAGE_EXTENSIONS[0]}"
+                   alt="Cover for game ${escapeHtml(spilId)}"
+                   onerror="handleImageError(this)"
+                   onclick="openImageModal(this.src)" />`;
+    }
+
+    function openImageModal(src) {
+      const overlay = document.getElementById('imageModalOverlay');
+      const img = document.getElementById('imageModalImg');
+      img.src = src;
+      overlay.style.display = 'flex';
+    }
+
+    function closeImageModal() {
+      const overlay = document.getElementById('imageModalOverlay');
+      overlay.style.display = 'none';
+      document.getElementById('imageModalImg').src = '';
+    }
+
+    function handleImageError(img) {
+      const nextIndex = parseInt(img.getAttribute('data-ext-index'), 10) + 1;
+      const spilId = img.getAttribute('data-spil-id');
+      if (nextIndex < IMAGE_EXTENSIONS.length) {
+        img.setAttribute('data-ext-index', String(nextIndex));
+        img.src = `images/${encodeURIComponent(spilId)}_1.${IMAGE_EXTENSIONS[nextIndex]}`;
+        return;
+      }
+      // Exhausted every extension — swap the <img> for a plain "no image" placeholder.
+      img.onerror = null;
+      const placeholder = document.createElement('div');
+      placeholder.className = 'game-thumb no-image';
+      placeholder.textContent = 'No image';
+      img.replaceWith(placeholder);
+    }
+
     function renderDoc(doc, idx) {
+      const spilId = getSpilId(doc);
+      const thumbId = `thumb-${currentStart + idx}`;
+      const thumb = renderThumb(spilId, thumbId);
+
       const pairs = Object.entries(doc).map(([key, rawValue]) => {
-        const { kind, html } = renderFieldValue(rawValue);
+        const html = renderFieldValue(rawValue);
         return `
           <div style="padding:6px 0;">
             <span class="field-name">${escapeHtml(key)}</span>
-            <span class="field-meta">${kind}</span>
             <div class="field-value">${html}</div>
           </div>`;
       }).join('');
 
       return `<div class="result-item">
+        ${thumb}
         <div style="margin-bottom:6px"><strong>Document ${currentStart + idx + 1}</strong></div>
         ${pairs}
       </div>`;
@@ -275,12 +375,12 @@
 
     function renderFieldValue(v) {
       if (v === null || v === undefined)
-        return { kind: '<span style="color:#999">null</span>', html: '<em>null</em>' };
+        return '<em>null</em>';
       if (Array.isArray(v))
-        return { kind: '<span style="color:#0b57d0">multi-valued</span>', html: renderArray(v) };
+        return renderArray(v);
       if (typeof v === 'object')
-        return { kind: '<span style="color:#0b57d0">object</span>', html: `<pre class="json-block">${escapeHtml(JSON.stringify(v, null, 2))}</pre>` };
-      return { kind: '<span style="color:#2a7a2a">single-valued</span>', html: renderTruncatedValue(v) };
+        return `<pre class="json-block">${escapeHtml(JSON.stringify(v, null, 2))}</pre>`;
+      return renderTruncatedValue(v);
     }
 
     function renderArray(arr) {
