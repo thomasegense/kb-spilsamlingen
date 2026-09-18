@@ -25,7 +25,7 @@ public class IndexExcelData {
     
     public static void main(String[] args) throws Exception {
 
-        String file = "/home/teg/eclipse-workspace/kb-spilsamlingen/doc/SpilregistrantV.03.csv";
+        String file = "/home/teg/workspace/kb-spilsamlingen/doc/SpilregistrantV.03.csv";
         List<CSVRecord> csvData = getCsvData(file);
 
         index(csvData);
