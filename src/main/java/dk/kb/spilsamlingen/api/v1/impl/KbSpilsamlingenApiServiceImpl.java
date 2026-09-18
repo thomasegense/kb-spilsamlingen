@@ -62,7 +62,7 @@ public class KbSpilsamlingenApiServiceImpl extends ImplBase implements KbSpilsam
         try {
           //  String solrUrl= ServiceConfig.getSolrUrl();
 
-            String solrUrl="http://teg-workstation.sb.statsbiblioteket.dk:8983/solr/spilsamlingen/";
+            String solrUrl="http://localhost:8983/solr/spilsamlingen/";
 
             SolrServerClient client = new SolrServerClient(solrUrl); 
             return client.searchJsonResponse(q, rows , start);
