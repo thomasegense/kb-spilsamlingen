@@ -70,6 +70,20 @@
     .field-value { display: inline-block; vertical-align: top; max-width: 740px; word-break: break-word; position: relative; }
     ul.field-list { margin: 0.25rem 0 0.5rem 1.2rem; padding: 0; list-style: disc; }
 
+    .extra-fields { display: none; margin-top: 4px; }
+    .extra-fields.expanded { display: block; }
+    .toggle-fields-btn {
+      margin-top: 6px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.85rem;
+      border-radius: 4px;
+      border: 1px solid #dfe7f3;
+      background: #f4f7fc;
+      color: #0b57d0;
+      cursor: pointer;
+    }
+    .toggle-fields-btn:hover { background: #eef3ff; }
+
     pre.json-block {
       background: #fefefe;
       border: 1px solid #eee;
@@ -352,25 +366,52 @@
       img.replaceWith(placeholder);
     }
 
+    // Fields shown by default, and the order they're shown in. Everything
+    // else on the doc is hidden behind a "Show more fields" toggle.
+    const DEFAULT_FIELDS = ['titel', 'aar', 'udgiver', 'spillets_url', 'spil_id'];
+
+    function renderField(key, rawValue) {
+      const html = renderFieldValue(rawValue);
+      return `
+        <div style="padding:6px 0;">
+          <span class="field-name">${escapeHtml(key)}</span>
+          <div class="field-value">${html}</div>
+        </div>`;
+    }
+
     function renderDoc(doc, idx) {
       const spilId = getSpilId(doc);
-      const thumbId = `thumb-${currentStart + idx}`;
+      const docIndex = currentStart + idx;
+      const thumbId = `thumb-${docIndex}`;
       const thumb = renderThumb(spilId, thumbId);
 
-      const pairs = Object.entries(doc).map(([key, rawValue]) => {
-        const html = renderFieldValue(rawValue);
-        return `
-          <div style="padding:6px 0;">
-            <span class="field-name">${escapeHtml(key)}</span>
-            <div class="field-value">${html}</div>
-          </div>`;
-      }).join('');
+      const keysPresent = new Set(Object.keys(doc));
+      const defaultKeys = DEFAULT_FIELDS.filter(k => keysPresent.has(k));
+      const extraKeys = Object.keys(doc).filter(k => !DEFAULT_FIELDS.includes(k));
+
+      const defaultPairs = defaultKeys.map(key => renderField(key, doc[key])).join('');
+      const extraPairs = extraKeys.map(key => renderField(key, doc[key])).join('');
+
+      const extraId = `extra-${docIndex}`;
+      const extraSection = extraKeys.length === 0 ? '' : `
+        <button class="toggle-fields-btn" onclick="toggleExtraFields('${extraId}')" id="${extraId}-btn">Show ${extraKeys.length} more fields</button>
+        <div class="extra-fields" id="${extraId}">${extraPairs}</div>`;
 
       return `<div class="result-item">
         ${thumb}
-        <div style="margin-bottom:6px"><strong>Document ${currentStart + idx + 1}</strong></div>
-        ${pairs}
+        <div style="margin-bottom:6px"><strong>Document ${docIndex + 1}</strong></div>
+        ${defaultPairs}
+        ${extraSection}
       </div>`;
+    }
+
+    function toggleExtraFields(extraId) {
+      const el = document.getElementById(extraId);
+      const btn = document.getElementById(`${extraId}-btn`);
+      if (!el || !btn) return;
+      const expanded = el.classList.toggle('expanded');
+      const count = el.querySelectorAll('.field-name').length;
+      btn.textContent = expanded ? 'Hide fields' : `Show ${count} more fields`;
     }
 
     function renderFieldValue(v) {
