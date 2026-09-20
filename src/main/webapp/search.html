@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Spilsamlingen Search — Pagination + Pinned Tooltip</title>
+  <title>Spilsamlingen</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     body {
@@ -12,6 +12,25 @@
       padding: 0 1rem;
     }
     h1 { text-align: center; margin-bottom: 1rem; }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .page-header h1 { margin: 0; text-align: left; }
+    #emuPicker {
+      padding: 0.55rem 0.75rem;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #f8f8f8;
+      color: #333;
+      cursor: pointer;
+    }
+    #emuPicker:hover { background: #eef3ff; }
     #searchBox {
       width: 100%;
       padding: 0.8rem;
@@ -199,7 +218,14 @@
   </style>
 </head>
 <body>
-  <h1>Spilsamlingen Search</h1>
+  <div class="page-header">
+    <h1>Spilsamlingen</h1>
+    <select id="emuPicker" onchange="openEmulatedGame(this.value); this.value='';">
+      <option value="" selected>&#127918; Spil et emuleret spil&hellip;</option>
+      <option value="c64-emulator.html">Tiger Mission (Commodore 64)</option>
+      <option value="dos-emulator.html">Kaptajn Kaper i Kattegat (DOS)</option>
+    </select>
+  </div>
 
   <input id="searchBox" type="text" placeholder="Enter query and press Enter (e.g. *:*)" />
 
@@ -514,6 +540,14 @@
       const rect = target.getBoundingClientRect();
       tooltip.style.top = window.scrollY + rect.bottom + 5 + 'px';
       tooltip.style.left = Math.min(window.scrollX + rect.left, window.innerWidth - tooltip.offsetWidth - 20) + 'px';
+    }
+
+    // Hardcoded list of games with a working in-browser emulator (demo
+    // prototype). Opens the emulator page in a new tab; each emulator page
+    // already defaults to its own game when loaded with no query params.
+    function openEmulatedGame(url) {
+      if (!url) return;
+      window.open(url, '_blank');
     }
 
     function escapeHtml(s) {

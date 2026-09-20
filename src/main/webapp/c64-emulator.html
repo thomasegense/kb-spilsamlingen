@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">C64 Emulator</title>
+<style>
+  :root {
+    --c64-blue: #40318d;
+    --c64-lightblue: #7c70da;
+    --c64-border: #8c7fe8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: #1b1730;
+    color: #e8e5ff;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+  }
+  header {
+    background: var(--c64-blue);
+    border-bottom: 4px solid var(--c64-border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  header a {
+    color: #cfc9ff;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  header a:hover { text-decoration: underline; }
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #fff;
+  }
+  h1 .sub {
+    font-weight: normal;
+    color: #cfc9ff;
+    font-size: 1rem;
+  }
+  main {
+    max-width: 900px;
+    margin: 1.5rem auto;
+    padding: 0 1rem 3rem;
+  }
+  #emu-wrap {
+    background: #000;
+    border: 6px solid var(--c64-border);
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+  }
+  #game {
+    width: 100%;
+    height: 100%;
+  }
+  .panel {
+    background: #2a2450;
+    border: 1px solid #453d80;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .panel h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #b7aeff;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .panel table { border-collapse: collapse; width: 100%; }
+  .panel td { padding: 0.15rem 0.5rem 0.15rem 0; vertical-align: top; }
+  .panel td.key {
+    font-family: "Courier New", monospace;
+    color: #ffd97a;
+    white-space: nowrap;
+  }
+  .note {
+    font-size: 0.85rem;
+    color: #a89fe0;
+  }
+  .badge {
+    display: inline-block;
+    background: #453d80;
+    color: #cfc9ff;
+    border-radius: 4px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Commodore 64 <span class="sub">— i browseren</span></h1>
+  <a href="search.html">&larr; Tilbage til søgning</a>
+</header>
+
+<main>
+  <h2 id="gameTitle" style="margin:0 0 0.75rem;">Indlæser…</h2>
+
+  <div id="emu-wrap">
+    <div id="game"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Sådan spiller du</h2>
+    <table>
+      <tr><td class="key">Klik "Play"</td><td>Emulatoren starter ikke lyden automatisk — browseren kræver et klik, før lyd må afspilles. Klik på play-knappen midt i skærmen for at starte.</td></tr>
+      <tr><td class="key">Piletaster</td><td>Styrer joysticket (op/ned/venstre/højre).</td></tr>
+      <tr><td class="key">Space / Ctrl (venstre)</td><td>Fyr / knap 2 på joysticket.</td></tr>
+      <tr><td class="key">Return / alle andre taster</td><td>Sendes direkte til C64'erens eget tastatur — bruges bl.a. til at komme forbi en "press play on tape"/"press return"-skærm, og til spil der bruger tastaturet direkte.</td></tr>
+      <tr><td class="key">Højre Ctrl</td><td>Skifter joystick-port (1 ⇄ 2). Reagerer spillet ikke på joysticket, så prøv at skifte port her — ældre C64-spil (før ca. 1988) bruger typisk port 1, nyere bruger port 2.</td></tr>
+      <tr><td class="key">F11</td><td>Fuldskærm.</td></tr>
+    </table>
+    <p class="note">Emulatoren er <a href="https://emulatorjs.org/" target="_blank" rel="noopener">EmulatorJS</a> med VICE-kernen (<code>vice_x64sc</code>) — en gennemtestet, aktivt vedligeholdt C64-emulator med understøttelse af bånd (.t64/.tap), disketter (.d64) og programfiler (.prg). Data hentes fra EmulatorJS' CDN.</p>
+    <p class="note"><strong>Ingen lyd?</strong> Tjek højtaler-/lydstyrke-ikonet i emulatorens egen værktøjslinje (ikke kun browserens/computerens lydstyrke) — nogle browsere starter emulatoren "muted" indtil man selv slår lyd til der. Hvis spillet slet ikke er kommet i gang endnu (stadig på en indlæsnings-/tekstskærm), er der typisk heller ingen lyd endnu — det kommer først når selve spillet kører.</p>
+  </div>
+</main>
+
+<script>
+  // Simple query-string based configuration, so this page can later be reused
+  // for other C64 games (and in principle other EmulatorJS-supported systems)
+  // just by linking to it with different parameters, e.g.:
+  //   c64-emulator.html?rom=roms/c64/SOMEGAME.T64&title=Some+Game+(1988)
+  const params = new URLSearchParams(location.search);
+  const rom = params.get('rom') || 'roms/c64/TIGERMI1.T64';
+  const title = params.get('title') || 'Tiger Mission (1987, Kele Line)';
+  const core = params.get('core') || 'c64';
+
+  document.getElementById('pageTitle').textContent = title + ' – C64 Emulator';
+  document.getElementById('gameTitle').textContent = title;
+
+  window.EJS_player = '#game';
+  window.EJS_core = core;
+  window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+  window.EJS_gameUrl = rom;
+  window.EJS_gameName = title;
+  window.EJS_backgroundColor = '#000000';
+  window.EJS_noAutoFocus = false;
+  window.EJS_volume = 0.7;
+  // Deliberately NOT setting EJS_startOnLoaded: this keeps EmulatorJS's own
+  // "click to play" overlay, which is required for the browser to allow audio.
+
+  // The VICE core ships with "Keyboard Pass-through" OFF by default. With it
+  // off, physical keys that aren't part of the RetroPad/joystick mapping
+  // (Return, letters, function keys, etc.) never reach the emulated C64
+  // keyboard at all - which is why a tape/game asking you to "press Return"
+  // otherwise never responds. Turning it on routes the whole keyboard
+  // straight to the C64. "warp" autostart just fast-forwards tape loading.
+  window.EJS_defaultOptions = {
+    'vice_physical_keyboard_pass_through': 'enabled',
+    'vice_autostart': 'warp'
+  };
+</script>
+<script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+
+</body>
+</html>
