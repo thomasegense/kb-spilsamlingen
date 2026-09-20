@@ -276,11 +276,25 @@
         for (let i = 0; i < values.length; i += 2) {
           const val = values[i];
           const count = values[i + 1];
-          html += `<span class="facet-value" onclick="facetSearch('${field}:${escapeJsString(val)}')">${escapeHtml(val)} <span class="badge">${count}</span></span>`;
+          html += `<span class="facet-value" data-field="${escapeHtml(field)}" data-value="${escapeHtml(val)}">${escapeHtml(val)} <span class="badge">${count}</span></span>`;
         }
         html += `</div></div>`;
       }
       facetsDiv.innerHTML = html;
+
+      facetsDiv.querySelectorAll('.facet-value').forEach(el => {
+        el.addEventListener('click', () => {
+          facetSearch(buildFacetQuery(el.getAttribute('data-field'), el.getAttribute('data-value')));
+        });
+      });
+    }
+
+    // Builds a Solr field query, quoting the value so multi-word facet
+    // values (e.g. "puzzle video game") are matched as a phrase rather
+    // than as separate terms. Escapes backslashes/quotes for Solr syntax.
+    function buildFacetQuery(field, val) {
+      const escaped = String(val).replace(/([\\"])/g, '\\$1');
+      return `${field}:"${escaped}"`;
     }
 
     function facetSearch(query) {
