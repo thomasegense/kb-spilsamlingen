@@ -42,19 +42,28 @@
       position: relative;
     }
 
-    .result-item { padding: 0.6rem 0; border-bottom: 1px solid #e6e9ee; }
+    .result-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #e6e9ee;
+    }
     .result-item:last-child { border-bottom: none; }
+    .result-body { flex: 1 1 auto; min-width: 0; }
     .game-thumb {
       display: block;
       width: auto;
       height: auto;
-      max-width: 160px;
-      max-height: 200px;
+      max-width: 240px;
+      max-height: 300px;
       object-fit: contain;
       border-radius: 6px;
       border: 1px solid #ddd;
       background: #f0f0f0;
-      margin: 0 0 10px 0;
+      margin: 0;
+      flex: 0 0 auto;
+      order: 2;
     }
     .game-thumb.no-image {
       display: flex;
@@ -64,10 +73,13 @@
       font-size: 0.75rem;
       text-align: center;
       padding: 4px;
+      width: 150px;
+      height: 190px;
+      box-sizing: border-box;
     }
     .field-name { font-weight: 600; display: inline-block; min-width: 180px; }
     .field-meta { font-size: 0.85rem; color: #666; margin-left: 6px; }
-    .field-value { display: inline-block; vertical-align: top; max-width: 740px; word-break: break-word; position: relative; }
+    .field-value { display: inline-block; vertical-align: top; max-width: 100%; word-break: break-word; position: relative; }
     ul.field-list { margin: 0.25rem 0 0.5rem 1.2rem; padding: 0; list-style: disc; }
 
     .extra-fields { display: none; margin-top: 4px; }
@@ -181,6 +193,8 @@
     @media (max-width: 800px) {
       .layout { flex-direction: column; }
       .facets { flex: 1; max-height: none; order: -1; }
+      .result-item { flex-direction: column; }
+      .game-thumb { order: 0; }
     }
   </style>
 </head>
@@ -398,10 +412,12 @@
         <div class="extra-fields" id="${extraId}">${extraPairs}</div>`;
 
       return `<div class="result-item">
+        <div class="result-body">
+          <div style="margin-bottom:6px"><strong>Document ${docIndex + 1}</strong></div>
+          ${defaultPairs}
+          ${extraSection}
+        </div>
         ${thumb}
-        <div style="margin-bottom:6px"><strong>Document ${docIndex + 1}</strong></div>
-        ${defaultPairs}
-        ${extraSection}
       </div>`;
     }
 
