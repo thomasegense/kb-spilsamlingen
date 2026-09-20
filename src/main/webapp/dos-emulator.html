@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">DOS Emulator</title>
+<link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+<script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+<style>
+  :root {
+    --dos-blue: #0000aa;
+    --dos-lightblue: #5555ff;
+    --dos-border: #7777ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: #14122b;
+    color: #e8e5ff;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+  }
+  header {
+    background: var(--dos-blue);
+    border-bottom: 4px solid var(--dos-border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  header a {
+    color: #cfd4ff;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  header a:hover { text-decoration: underline; }
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #fff;
+  }
+  h1 .sub {
+    font-weight: normal;
+    color: #cfd4ff;
+    font-size: 1rem;
+  }
+  main {
+    max-width: 900px;
+    margin: 1.5rem auto;
+    padding: 0 1rem 3rem;
+  }
+  #emu-wrap {
+    background: #000;
+    border: 6px solid var(--dos-border);
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+    position: relative;
+  }
+  #dos {
+    width: 100%;
+    height: 100%;
+  }
+  #loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7777ff;
+    font-family: "Courier New", monospace;
+    font-size: 1rem;
+  }
+  .panel {
+    background: #24215a;
+    border: 1px solid #3d3a80;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .panel h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #aeb4ff;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .panel table { border-collapse: collapse; width: 100%; }
+  .panel td { padding: 0.15rem 0.5rem 0.15rem 0; vertical-align: top; }
+  .panel td.key {
+    font-family: "Courier New", monospace;
+    color: #ffd97a;
+    white-space: nowrap;
+  }
+  .note {
+    font-size: 0.85rem;
+    color: #a3a8e0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DOS <span class="sub">— i browseren</span></h1>
+  <a href="search.html">&larr; Tilbage til søgning</a>
+</header>
+
+<main>
+  <h2 id="gameTitle" style="margin:0 0 0.75rem;">Indlæser…</h2>
+
+  <div id="emu-wrap">
+    <div id="dos"></div>
+    <div id="loading">Henter spilfiler…</div>
+  </div>
+
+  <div class="panel">
+    <h2>Sådan spiller du</h2>
+    <table>
+      <tr><td class="key">Klik på skærmen</td><td>Giver tastaturfokus til spillet, så alle tastetryk går til DOS-programmet.</td></tr>
+      <tr><td class="key">Piletaster / Enter / Esc</td><td>De fleste gamle DOS-spil styres med disse samt bogstav- og funktionstaster (F1-F10) — prøv dig frem, da hvert spil har sit eget tastaturlayout.</td></tr>
+      <tr><td class="key">Ctrl+F9 (i emulator-menuen)</td><td>Åbn js-dos' egen indstillingsmenu (lydstyrke, fuldskærm, CPU-hastighed m.m.) via ikonet nederst i emulator-vinduet.</td></tr>
+      <tr><td class="key">F11</td><td>Fuldskærm.</td></tr>
+    </table>
+    <p class="note">Emulatoren er <a href="https://js-dos.com/" target="_blank" rel="noopener">js-dos</a> (v8) — en DOSBox-baseret emulator, der kører hele DOS-maskinen i browseren. Spilfilerne er hentet fra Internet Archives eksemplar af spillet (<a href="https://archive.org/details/kaper_v1r4" target="_blank" rel="noopener">archive.org/details/kaper_v1r4</a>), doneret til Det Kongelige Bibliotek af Thorbjørn Stegelmann, og udgivet af skaberen Peter Ole Frederiksen som donationware/public domain.</p>
+  </div>
+</main>
+
+<script>
+  // Query-string based configuration, so this page can be reused for other
+  // DOS games later, e.g.:
+  //   dos-emulator.html?dir=dos/somegame&exe=GAME.EXE&title=Some+Game+(1990)&files=GAME.EXE,DATA.DAT
+  const params = new URLSearchParams(location.search);
+  const dir = params.get('dir') || 'dos/kaper';
+  const exe = params.get('exe') || 'KAPER.EXE';
+  const title = params.get('title') || 'Kaptajn Kaper i Kattegat (1985, Peter Ole Frederiksen)';
+  const defaultFiles = 'CURDIR.DAT,FIGURES.DAT,HLP.DAT,KAPER.EXE,MAP.PIC,MENUSYS.DAT,REC.DAT,SIGTE.PIC,SPACE.BAS,TEMP.PIC,TITEL.PIC';
+  const fileList = (params.get('files') || defaultFiles).split(',').map(f => f.trim()).filter(Boolean);
+
+  document.getElementById('pageTitle').textContent = title + ' – DOS Emulator';
+  document.getElementById('gameTitle').textContent = title;
+
+  async function boot() {
+    const initFs = [];
+    for (const name of fileList) {
+      const resp = await fetch(dir + '/' + name);
+      if (!resp.ok) {
+        throw new Error('Kunne ikke hente ' + name + ' (' + resp.status + ')');
+      }
+      const buf = await resp.arrayBuffer();
+      initFs.push({ path: name, contents: new Uint8Array(buf) });
+    }
+
+    document.getElementById('loading').remove();
+
+    Dos(document.getElementById('dos'), {
+      initFs: initFs,
+      dosboxConf: `
+[autoexec]
+mount c .
+c:
+${exe}
+`,
+    });
+  }
+
+  boot().catch(err => {
+    document.getElementById('loading').textContent = 'Fejl: ' + err.message;
+  });
+</script>
+
+</body>
+</html>
