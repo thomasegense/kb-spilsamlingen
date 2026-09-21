@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -347,7 +348,7 @@ public class DownloadCsdbThumbnails {
             return exact;
         }
         for (Map.Entry<String, Integer> e : col.entrySet()) {
-            String k = e.getKey().toLowerCase();
+            String k = e.getKey().toLowerCase(Locale.ROOT);
             if (k.startsWith("spil") && k.contains("url")) {
                 return e.getValue();
             }

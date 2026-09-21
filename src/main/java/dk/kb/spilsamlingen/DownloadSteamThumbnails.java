@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -120,7 +121,7 @@ public class DownloadSteamThumbnails {
             g.title = cell(row, titleCol).trim();
             g.platform = cell(row, platformCol).trim();
 
-            if (url.toLowerCase().contains("steampowered.com")) {
+            if (url.toLowerCase(Locale.ROOT).contains("steampowered.com")) {
                 Matcher m = STEAM_APP.matcher(url);
                 if (m.find()) {
                     g.appId = Long.parseLong(m.group(1));
@@ -447,7 +448,7 @@ public class DownloadSteamThumbnails {
             return exact;
         }
         for (Map.Entry<String, Integer> e : col.entrySet()) {
-            String k = e.getKey().toLowerCase();
+            String k = e.getKey().toLowerCase(Locale.ROOT);
             if (k.startsWith("spil") && k.contains("url")) {
                 return e.getValue();
             }
