@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">Flash Emulator</title>
+<style>
+  :root {
+    --flash-red: #7a1220;
+    --flash-orange: #ff8a3d;
+    --flash-border: #b4413d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: #1a0e0e;
+    color: #f1e9e9;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+  }
+  header {
+    background: var(--flash-red);
+    border-bottom: 4px solid var(--flash-orange);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  header a {
+    color: #ffd7bd;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  header a:hover { text-decoration: underline; }
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #fff;
+  }
+  h1 .sub {
+    font-weight: normal;
+    color: #ffd7bd;
+    font-size: 1rem;
+  }
+  main {
+    max-width: 900px;
+    margin: 1.5rem auto;
+    padding: 0 1rem 3rem;
+  }
+  #emu-wrap {
+    background: #000;
+    border: 6px solid var(--flash-border);
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+    position: relative;
+  }
+  #game {
+    width: 100%;
+    height: 100%;
+  }
+  .panel {
+    background: #2a1616;
+    border: 1px solid var(--flash-border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .panel h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #ffb98c;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .panel table { border-collapse: collapse; width: 100%; }
+  .panel td { padding: 0.15rem 0.5rem 0.15rem 0; vertical-align: top; }
+  .panel td.key {
+    font-family: "Courier New", monospace;
+    color: var(--flash-orange);
+    white-space: nowrap;
+  }
+  .note {
+    font-size: 0.85rem;
+    color: #d9b8b0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Flash-spil <span class="sub">— i browseren</span></h1>
+  <a href="search.html">&larr; Tilbage til søgning</a>
+</header>
+
+<main>
+  <h2 id="gameTitle" style="margin:0 0 0.75rem;">Indlæser…</h2>
+
+  <div id="emu-wrap">
+    <div id="game"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Sådan spiller du</h2>
+    <table>
+      <tr><td class="key">Klik på spillet</td><td>Ruffle kræver et klik, før lyd må afspilles (samme browser-regel som de andre emulator-sider her) — der kommer en lille "klik for lyd"-boks, hvis spillet har lyd.</td></tr>
+      <tr><td class="key">Mus/tastatur</td><td>De fleste gamle Flash-spil styres med musen; nogle bruger også piletaster eller mellemrum. Det afhænger helt af det enkelte spil.</td></tr>
+      <tr><td class="key">Højreklik</td><td>Åbner Ruffles egen kontekstmenu (ikke browserens) — herfra kan du bl.a. se afspillerens indstillinger.</td></tr>
+    </table>
+    <p class="note">Emulatoren er <a href="https://ruffle.rs/" target="_blank" rel="noopener">Ruffle</a> — en Flash Player-emulator skrevet i Rust og kompileret til WebAssembly, indlæst fra Ruffles offentlige CDN (ikke selv-hostet endnu, samme mønster som C64/DOS/Amiga-siderne her). Ruffle er open source og laves specifikt til at holde gamle Flash-spil og -animationer spilbare, nu hvor Adobe har lukket den rigtige Flash Player ned.</p>
+    <p class="note">Ruffle understøtter langt de fleste ActionScript 2-spil (de fleste browserspil fra 2000'erne) godt; nyere ActionScript 3-indhold er stadig under udvikling i Ruffle og kan i sjældne tilfælde opføre sig anderledes end i den originale Flash Player.</p>
+  </div>
+</main>
+
+<script>
+  // Query-string configuration, same pattern as the other *-emulator.html
+  // pages, so this page can be reused for other Flash games later just by
+  // linking to it with different parameters, e.g.:
+  //   flash-emulator.html?rom=roms/flash/SOMEGAME.swf&title=Some+Game+(2005)
+  const params = new URLSearchParams(location.search);
+  const rom = params.get('rom') || 'roms/flash/perkerspillet.swf';
+  const title = params.get('title') || 'Mufafa spillet';
+
+  document.getElementById('pageTitle').textContent = title + ' – Flash Emulator';
+  document.getElementById('gameTitle').textContent = title;
+
+  // Ruffle config, set before the loader script runs (same "configure via a
+  // global before loading the engine" pattern as EJS_* for EmulatorJS).
+  window.RufflePlayer = window.RufflePlayer || {};
+  window.RufflePlayer.config = {
+    autoplay: "auto",
+    unmuteOverlay: "visible",
+    contextMenu: true,
+  };
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const ruffle = window.RufflePlayer.newest();
+    const player = ruffle.createPlayer();
+    player.style.width = "100%";
+    player.style.height = "100%";
+    document.getElementById("game").appendChild(player);
+    player.load(rom);
+  });
+</script>
+<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+
+</body>
+</html>
