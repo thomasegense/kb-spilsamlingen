@@ -225,6 +225,17 @@
       <option value="c64-emulator.html">Tiger Mission - T64 (Commodore 64)</option>
       <option value="c64-emulator.html?rom=roms/c64/Tiger_Mission.tap&title=Tiger%20Mission%20(TAP%2C%201987%2C%20Kele%20Line)">Tiger Mission - TAP (Commodore 64)</option>
       <option value="dos-emulator.html">Kaptajn Kaper i Kattegat (DOS)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Al_Capone.t64&title=Al%20Capone">Al Capone (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Army_Force.t64&title=Army%20Force">Army Force (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Auto_Duel.t64&title=Auto%20Duel">Auto Duel (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Balloon_Samurai.t64&title=Balloon%20Samurai">Balloon Samurai (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Canon_Command.t64&title=Canon%20Command">Canon Command (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Eskimo.t64&title=Eskimo%21">Eskimo! (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Falcons.t64&title=Falcons">Falcons (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Flying_Balls_Plus.d64&title=Flying%20Balls%2B">Flying Balls+ (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Korea_Karate.t64&title=Korea%20Karate">Korea Karate (Commodore 64)</option>
+      <option value="c64-emulator.html?rom=roms/c64/Madballs_II.d64&title=Madballs%20II">Madballs II (Commodore 64)</option>
+      <option value="spectrum-emulator.html?rom=roms/spectrum/Buggy_Boy_1988_Elite_Systems_a_128K.z80&title=Buggy%20Boy%20(1988%2C%20Elite%20Systems%2C%20128K)">Buggy Boy (ZX Spectrum)</option>
     </select>
   </div>
 
@@ -242,7 +253,11 @@
   </div>
 
   <script>
-    const SOLR_URL = "http://localhost:8080/kb-spilsamlingen/v1/search";
+    // Resolve the search API relative to wherever this page itself was
+    // loaded from (protocol, host, port, and webapp context path all come
+    // along for free) — so this never has to be hand-edited per server
+    // again, no matter what host/port the app is deployed on.
+    const SOLR_URL = new URL('v1/search', window.location.href).href;
     const ROWS_PER_PAGE = 10;
     let currentQuery = "*:*";
     let currentStart = 0;
