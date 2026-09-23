@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">Amiga Emulator</title>
+<style>
+  :root {
+    --amiga-blue: #10246b;
+    --amiga-orange: #ff6a1a;
+    --amiga-border: #3d55b4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: #0b1230;
+    color: #e9ecf1;
+    font-family: "Segoe UI", Verdana, Arial, sans-serif;
+  }
+  header {
+    background: var(--amiga-blue);
+    border-bottom: 4px solid var(--amiga-orange);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  header a {
+    color: #ffd7bd;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  header a:hover { text-decoration: underline; }
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #fff;
+  }
+  h1 .sub {
+    font-weight: normal;
+    color: #ffd7bd;
+    font-size: 1rem;
+  }
+  main {
+    max-width: 900px;
+    margin: 1.5rem auto;
+    padding: 0 1rem 3rem;
+  }
+  #emu-wrap {
+    background: #000;
+    border: 6px solid var(--amiga-border);
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+  }
+  #game {
+    width: 100%;
+    height: 100%;
+  }
+  .panel {
+    background: #161c40;
+    border: 1px solid var(--amiga-border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .panel h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #ffb98c;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .panel table { border-collapse: collapse; width: 100%; }
+  .panel td { padding: 0.15rem 0.5rem 0.15rem 0; vertical-align: top; }
+  .panel td.key {
+    font-family: "Courier New", monospace;
+    color: var(--amiga-orange);
+    white-space: nowrap;
+  }
+  .note {
+    font-size: 0.85rem;
+    color: #a9b0d0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Commodore Amiga <span class="sub">— i browseren</span></h1>
+  <a href="search.html">&larr; Tilbage til søgning</a>
+</header>
+
+<main>
+  <h2 id="gameTitle" style="margin:0 0 0.75rem;">Indlæser…</h2>
+
+  <div id="emu-wrap">
+    <div id="game"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Sådan spiller du</h2>
+    <table>
+      <tr><td class="key">Klik "Play"</td><td>Emulatoren starter ikke lyden automatisk — browseren kræver et klik, før lyd må afspilles. Klik på play-knappen midt i skærmen for at starte.</td></tr>
+      <tr><td class="key">Piletaster</td><td>Styrer det emulerede joystick (op/ned/venstre/højre).</td></tr>
+      <tr><td class="key">X</td><td>Fyr (knap "B"). Hvis det ikke virker, så åbn emulatorens egen "Control Settings"/tandhjuls-menu nederst i emulator-vinduet — den viser og kan ændre den faktiske tastebinding, som kan variere lidt mellem browsere/versioner.</td></tr>
+      <tr><td class="key">Højre Ctrl</td><td>Skifter mellem joystick- og mus-emulering for porten (nogle Amiga-spil forventer styring fra en bestemt port). Hvis skibet slet ikke reagerer, så tjek core-indstillingen "Joystick Port Order" i emulatorens indstillinger — nogle spil forventer joysticket i port 2 i stedet for port 1.</td></tr>
+      <tr><td class="key">F11</td><td>Fuldskærm.</td></tr>
+    </table>
+    <p class="note"><strong>Rigtig joystick/gamepad?</strong> Denne emulator er lavet til at blive styret med et joystick, og et rigtigt USB- eller Bluetooth-gamepad forbundet til computeren virker direkte via browserens Gamepad-API — ingen opsætning nødvendig. Det giver en markant mere "rigtig" oplevelse end piletaster + X, særligt til et hurtigt shoot-'em-up som dette.</p>
+    <p class="note">Emulatoren er <a href="https://emulatorjs.org/" target="_blank" rel="noopener">EmulatorJS</a> med PUAE-kernen (<code>amiga</code>) — en Amiga 500-emulator baseret på (P-)UAE. Kickstart-ROM'en (BIOS'en) hentes fra <code>amiga/</code>-mappen og er ikke en del af selve spilfilen; den skal findes/leveres separat af licensmæssige årsager (Kickstart er stadig ophavsretligt beskyttet af Cloanto/Hyperion).</p>
+    <p class="note"><strong>Om denne udgave:</strong> Battle Squadron blev oprindeligt udgivet på 2 disketter. Denne emulatorside bruger en enkelt-diskette-udgave (crack af "Captain Paranoia", uden trainer/snyd-koder) frem for det originale 2-diskette-sæt, fordi EmulatorJS' diskette-skift-understøttelse til Amiga-kernen p.t. er ustabil på tværs af browsere. Selve spiloplevelsen er uændret i forhold til originalen.</p>
+    <p class="note"><strong>Ingen lyd?</strong> Tjek højtaler-/lydstyrke-ikonet i emulatorens egen værktøjslinje (ikke kun browserens/computerens lydstyrke).</p>
+  </div>
+</main>
+
+<script>
+  // Query-string configuration, same pattern as c64-emulator.html /
+  // spectrum-emulator.html, so this page can be reused for other Amiga
+  // games later just by linking to it with different parameters, e.g.:
+  //   amiga-emulator.html?rom=roms/amiga/SOMEGAME.adf&title=Some+Game+(1990)&bios=amiga/kick37175.A500...
+  const params = new URLSearchParams(location.search);
+  const rom = params.get('rom') || 'roms/amiga/Battle_Squadron.adf';
+  const title = params.get('title') || 'Battle Squadron (1989, Innerprise Software)';
+  const core = params.get('core') || 'amiga';
+  // Default to the Kickstart 1.3 ROM: that's the correct boot ROM for a
+  // stock Amiga 500, which is what this game (and most 1989-era Amiga
+  // titles) targets. A Kickstart 2.04 ROM (A500+) is also available in the
+  // amiga/ folder for later titles that may need it.
+  const bios = params.get('bios') || 'amiga/kick34005.A500';
+
+  document.getElementById('pageTitle').textContent = title + ' – Amiga Emulator';
+  document.getElementById('gameTitle').textContent = title;
+
+  window.EJS_player = '#game';
+  window.EJS_core = core;
+  window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+  window.EJS_gameUrl = rom;
+  window.EJS_biosUrl = bios;
+  window.EJS_gameName = title;
+  window.EJS_backgroundColor = '#000000';
+  window.EJS_noAutoFocus = false;
+  window.EJS_volume = 0.7;
+  // Deliberately NOT setting EJS_startOnLoaded: this keeps EmulatorJS's own
+  // "click to play" overlay, which is required for the browser to allow audio.
+</script>
+<script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+
+</body>
+</html>
