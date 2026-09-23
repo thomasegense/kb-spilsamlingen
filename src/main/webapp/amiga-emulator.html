@@ -114,7 +114,7 @@
     </table>
     <p class="note"><strong>Rigtig joystick/gamepad?</strong> Denne emulator er lavet til at blive styret med et joystick, og et rigtigt USB- eller Bluetooth-gamepad forbundet til computeren virker direkte via browserens Gamepad-API — ingen opsætning nødvendig. Det giver en markant mere "rigtig" oplevelse end piletaster + X, særligt til et hurtigt shoot-'em-up som dette.</p>
     <p class="note">Emulatoren er <a href="https://emulatorjs.org/" target="_blank" rel="noopener">EmulatorJS</a> med PUAE-kernen (<code>amiga</code>) — en Amiga 500-emulator baseret på (P-)UAE. Kickstart-ROM'en (BIOS'en) hentes fra <code>amiga/</code>-mappen og er ikke en del af selve spilfilen; den skal findes/leveres separat af licensmæssige årsager (Kickstart er stadig ophavsretligt beskyttet af Cloanto/Hyperion).</p>
-    <p class="note"><strong>Om denne udgave:</strong> Battle Squadron blev oprindeligt udgivet på 2 disketter. Denne emulatorside bruger en enkelt-diskette-udgave (crack af "Captain Paranoia", uden trainer/snyd-koder) frem for det originale 2-diskette-sæt, fordi EmulatorJS' diskette-skift-understøttelse til Amiga-kernen p.t. er ustabil på tværs af browsere. Selve spiloplevelsen er uændret i forhold til originalen.</p>
+    <p class="note" id="editionNote"><strong>Om denne udgave:</strong> Battle Squadron blev oprindeligt udgivet på 2 disketter. Denne emulatorside bruger en enkelt-diskette-udgave (crack af "Captain Paranoia", uden trainer/snyd-koder) frem for det originale 2-diskette-sæt, fordi EmulatorJS' diskette-skift-understøttelse til Amiga-kernen p.t. er ustabil på tværs af browsere. Selve spiloplevelsen er uændret i forhold til originalen.</p>
     <p class="note"><strong>Ingen lyd?</strong> Tjek højtaler-/lydstyrke-ikonet i emulatorens egen værktøjslinje (ikke kun browserens/computerens lydstyrke).</p>
   </div>
 </main>
@@ -136,6 +136,13 @@
 
   document.getElementById('pageTitle').textContent = title + ' – Amiga Emulator';
   document.getElementById('gameTitle').textContent = title;
+
+  // Optional per-game override of the "Om denne udgave" note. If not given,
+  // the Battle Squadron text already in the HTML above is left as-is.
+  const edition = params.get('edition');
+  if (edition) {
+    document.getElementById('editionNote').innerHTML = edition;
+  }
 
   window.EJS_player = '#game';
   window.EJS_core = core;
