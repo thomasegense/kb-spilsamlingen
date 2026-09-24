@@ -14,16 +14,73 @@ h1 { text-align: center; margin-bottom: 1rem; }
   flex-wrap: wrap;
 }
 .page-header h1 { margin: 0; text-align: left; }
-#emuPicker {
-  padding: 0.55rem 0.75rem;
-  font-size: 0.9rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #f8f8f8;
-  color: #333;
-  cursor: pointer;
+
+.emu-picker {
+  background: #f8f9fb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 0.6rem 1rem;
+  margin: 0.75rem 0 1rem;
 }
-#emuPicker:hover { background: #eef3ff; }
+.emu-picker-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  text-align: left;
+}
+.emu-picker-title:hover { color: #0b57d0; }
+.emu-picker-arrow {
+  display: inline-block;
+  color: #0b57d0;
+  transition: transform 0.15s ease;
+  transform: rotate(-90deg);
+}
+.emu-picker.expanded .emu-picker-arrow { transform: rotate(0deg); }
+.emu-columns {
+  display: none;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e6e9ee;
+}
+.emu-picker.expanded .emu-columns { display: flex; }
+.emu-column {
+  flex: 0 0 auto;
+  min-width: 150px;
+}
+.emu-column-header {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #0b57d0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #dfe7f3;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.4rem;
+}
+.emu-game-link {
+  display: block;
+  padding: 0.3rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  color: #333;
+  text-decoration: none;
+}
+.emu-game-link:hover {
+  background: #eef3ff;
+  color: #0b57d0;
+}
 #searchBox {
   width: 100%;
   padding: 0.8rem;
@@ -207,4 +264,6 @@ pre.json-block {
   .facets { flex: 1; max-height: none; order: -1; }
   .result-item { flex-direction: column; }
   .game-thumb { order: 0; }
+  .emu-columns { gap: 0.75rem; }
+  .emu-column { flex: 1 1 100%; min-width: 0; }
 }
