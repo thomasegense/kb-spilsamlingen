@@ -342,28 +342,34 @@
     // prototype), grouped by platform for the column picker below. Opens
     // the emulator page in a new tab; each emulator page already defaults
     // to its own game when loaded with no query params.
+    //
+    // Paths, titles and the edition note are written here in plain,
+    // human-readable form (real spaces, æøå, parens, brackets — no %20/%28
+    // percent-encoding) so the list stays easy to read and edit. Encoding
+    // for the URL only happens at the moment a link is opened, in
+    // buildEmuUrl() below.
     const EMULATED_GAMES = [
-      { platform: 'Commodore 64', label: 'Tiger Mission (T64)', url: 'c64-emulator.html' },
-      { platform: 'Commodore 64', label: 'Tiger Mission (TAP)', url: 'c64-emulator.html?rom=roms/c64/Tiger_Mission.tap&title=Tiger%20Mission%20(TAP%2C%201987%2C%20Kele%20Line)' },
-      { platform: 'Commodore 64', label: 'Al Capone', url: 'c64-emulator.html?rom=roms/c64/Al_Capone.t64&title=Al%20Capone' },
-      { platform: 'Commodore 64', label: 'Army Force', url: 'c64-emulator.html?rom=roms/c64/Army_Force.t64&title=Army%20Force' },
-      { platform: 'Commodore 64', label: 'Auto Duel', url: 'c64-emulator.html?rom=roms/c64/Auto_Duel.t64&title=Auto%20Duel' },
-      { platform: 'Commodore 64', label: 'Balloon Samurai', url: 'c64-emulator.html?rom=roms/c64/Balloon_Samurai.t64&title=Balloon%20Samurai' },
-      { platform: 'Commodore 64', label: 'Canon Command', url: 'c64-emulator.html?rom=roms/c64/Canon_Command.t64&title=Canon%20Command' },
-      { platform: 'Commodore 64', label: 'Eskimo!', url: 'c64-emulator.html?rom=roms/c64/Eskimo.t64&title=Eskimo%21' },
-      { platform: 'Commodore 64', label: 'Falcons', url: 'c64-emulator.html?rom=roms/c64/Falcons.t64&title=Falcons' },
-      { platform: 'Commodore 64', label: 'Flying Balls+', url: 'c64-emulator.html?rom=roms/c64/Flying_Balls_Plus.d64&title=Flying%20Balls%2B' },
-      { platform: 'Commodore 64', label: 'Korea Karate', url: 'c64-emulator.html?rom=roms/c64/Korea_Karate.t64&title=Korea%20Karate' },
-      { platform: 'Commodore 64', label: 'Madballs II', url: 'c64-emulator.html?rom=roms/c64/Madballs_II.d64&title=Madballs%20II' },
-      { platform: 'Commodore 64', label: 'Vikings', url: 'c64-emulator.html?rom=roms/c64/VIKINGS.D64&title=Vikings' },
-      { platform: 'DOS', label: 'Kaptajn Kaper i Kattegat', url: 'dos-emulator.html' },
-      { platform: 'ZX Spectrum', label: 'Buggy Boy', url: 'spectrum-emulator.html?rom=roms/spectrum/Buggy_Boy_1988_Elite_Systems_a_128K.z80&title=Buggy%20Boy%20(1988%2C%20Elite%20Systems%2C%20128K)' },
-      { platform: 'Amiga', label: 'Battle Squadron', url: 'amiga-emulator.html?rom=roms/amiga/battle_squadron/Battle_Squadron.adf&title=Battle%20Squadron%20(1989%2C%20Innerprise%20Software)' },
-      { platform: 'Amiga', label: 'Sword of Sodan (kun disk 1)', url: 'amiga-emulator.html?rom=roms/amiga/sword_of_sodan/Sword_of_Sodan_Disk1.adf&title=Sword%20of%20Sodan%20%281989%2C%20Discovery%20Software%29%20%E2%80%93%20kun%20disk%201&edition=%3Cstrong%3EOm%20denne%20udgave%3A%3C%2Fstrong%3E%20Sword%20of%20Sodan%20blev%20oprindeligt%20udgivet%20p%C3%A5%204%20disketter%2C%20og%20denne%20side%20viser%20lige%20nu%20kun%20%3Cstrong%3Edisk%201%20af%204%3C%2Fstrong%3E%20%28den%20rene%20udgave%2C%20ingen%20crack%2C%20ingen%20trainer%2Fsnyd-koder%29.%20Vi%20pr%C3%B8vede%20f%C3%B8rst%20at%20pakke%20alle%204%20diske%20sammen%20med%20en%20.m3u-spilleliste%2C%20s%C3%A5%20emulatoren%20selv%20kunne%20skifte%20disk%20undervejs%20%E2%80%94%20men%20det%20ramte%20en%20bekr%C3%A6ftet%2C%20endnu%20ul%C3%B8st%20fejl%20i%20EmulatorJS%E2%80%99%20Amiga-kerne%20%28%3Ca%20href%3D%22https%3A%2F%2Fgithub.com%2FEmulatorJS%2FEmulatorJS%2Fissues%2F1260%22%20target%3D%22_blank%22%20rel%3D%22noopener%22%3EEmulatorJS-issue%20%231260%3C%2Fa%3E%29%2C%20som%20g%C3%B8r%20at%20spillet%20slet%20ikke%20starter%2C%20n%C3%A5r%20der%20er%20mere%20end%20%C3%A9n%20disk%20i%20spil.%20Derfor%20k%C3%B8rer%20siden%20nu%20kun%20disk%201%2C%20indtil%20den%20rigtige%20flerdiske-underst%C3%B8ttelse%20er%20p%C3%A5%20plads.%20Det%20betyder%2C%20at%20du%20kan%20spille%20det%20f%C3%B8rste%20afsnit%20af%20spillet%2C%20men%20ikke%20komme%20videre%2C%20n%C3%A5r%20spillet%20beder%20om%20disk%202.' },
-      { platform: 'Amiga', label: 'Naughty Ones (AGA)', url: 'amiga-emulator.html?rom=roms/amiga/naughty_ones/Naughty%20Ones%20%281994%29%28Interactivision%29%28AGA%29%5Bcr%20PDX%5D.adf&title=Naughty%20Ones%20%281994%2C%20Interactivision%29&bios=amiga/kick40068.A1200&model=A1200' },
-      { platform: 'Amiga', label: 'Guldkorn Expressen (AGA)', url: 'amiga-emulator.html?rom=roms/amiga/guldkorn_expressen/Guldkorn%20Expressen%20%281991%29%28Silverrock%29%28Dk%29%5Bf%20AGA%20CRX%5D.adf&title=Guldkorn%20Expressen%20%281991%2C%20Silverrock%29&bios=amiga/kick40068.A1200&model=A1200' },
-      { platform: 'Amiga', label: 'Harald Hardtand', url: 'amiga-emulator.html?rom=roms/amiga/harald_hardtand/Harald%20Hardtand%20%281992%29%28Silverrock%29%28Da%29%5Bcr%20CSL%5D.adf&title=Harald%20Hardtand%20%281992%2C%20Silverrock%29' },
-      { platform: 'Flash', label: 'Mufafa spillet', url: 'flash-emulator.html?rom=roms/flash/perkerspillet.swf&title=Mufafa%20spillet' },
+      { platform: 'Commodore 64', label: 'Tiger Mission (T64)', page: 'c64-emulator.html' },
+      { platform: 'Commodore 64', label: 'Tiger Mission (TAP)', page: 'c64-emulator.html', rom: 'roms/c64/Tiger_Mission.tap', title: 'Tiger Mission (TAP, 1987, Kele Line)' },
+      { platform: 'Commodore 64', label: 'Al Capone', page: 'c64-emulator.html', rom: 'roms/c64/Al_Capone.t64', title: 'Al Capone' },
+      { platform: 'Commodore 64', label: 'Army Force', page: 'c64-emulator.html', rom: 'roms/c64/Army_Force.t64', title: 'Army Force' },
+      { platform: 'Commodore 64', label: 'Auto Duel', page: 'c64-emulator.html', rom: 'roms/c64/Auto_Duel.t64', title: 'Auto Duel' },
+      { platform: 'Commodore 64', label: 'Balloon Samurai', page: 'c64-emulator.html', rom: 'roms/c64/Balloon_Samurai.t64', title: 'Balloon Samurai' },
+      { platform: 'Commodore 64', label: 'Canon Command', page: 'c64-emulator.html', rom: 'roms/c64/Canon_Command.t64', title: 'Canon Command' },
+      { platform: 'Commodore 64', label: 'Eskimo!', page: 'c64-emulator.html', rom: 'roms/c64/Eskimo.t64', title: 'Eskimo!' },
+      { platform: 'Commodore 64', label: 'Falcons', page: 'c64-emulator.html', rom: 'roms/c64/Falcons.t64', title: 'Falcons' },
+      { platform: 'Commodore 64', label: 'Flying Balls+', page: 'c64-emulator.html', rom: 'roms/c64/Flying_Balls_Plus.d64', title: 'Flying Balls+' },
+      { platform: 'Commodore 64', label: 'Korea Karate', page: 'c64-emulator.html', rom: 'roms/c64/Korea_Karate.t64', title: 'Korea Karate' },
+      { platform: 'Commodore 64', label: 'Madballs II', page: 'c64-emulator.html', rom: 'roms/c64/Madballs_II.d64', title: 'Madballs II' },
+      { platform: 'Commodore 64', label: 'Vikings', page: 'c64-emulator.html', rom: 'roms/c64/VIKINGS.D64', title: 'Vikings' },
+      { platform: 'DOS', label: 'Kaptajn Kaper i Kattegat', page: 'dos-emulator.html' },
+      { platform: 'ZX Spectrum', label: 'Buggy Boy', page: 'spectrum-emulator.html', rom: 'roms/spectrum/Buggy_Boy_1988_Elite_Systems_a_128K.z80', title: 'Buggy Boy (1988, Elite Systems, 128K)' },
+      { platform: 'Amiga', label: 'Battle Squadron', page: 'amiga-emulator.html', rom: 'roms/amiga/battle_squadron/Battle_Squadron.adf', title: 'Battle Squadron (1989, Innerprise Software)' },
+      { platform: 'Amiga', label: 'Sword of Sodan (kun disk 1)', page: 'amiga-emulator.html', rom: 'roms/amiga/sword_of_sodan/Sword_of_Sodan_Disk1.adf', title: 'Sword of Sodan (1989, Discovery Software) – kun disk 1', edition: '<strong>Om denne udgave:</strong> Sword of Sodan blev oprindeligt udgivet på 4 disketter, og denne side viser lige nu kun <strong>disk 1 af 4</strong> (den rene udgave, ingen crack, ingen trainer/snyd-koder). Vi prøvede først at pakke alle 4 diske sammen med en .m3u-spilleliste, så emulatoren selv kunne skifte disk undervejs — men det ramte en bekræftet, endnu uløst fejl i EmulatorJS’ Amiga-kerne (<a href="https://github.com/EmulatorJS/EmulatorJS/issues/1260" target="_blank" rel="noopener">EmulatorJS-issue #1260</a>), som gør at spillet slet ikke starter, når der er mere end én disk i spil. Derfor kører siden nu kun disk 1, indtil den rigtige flerdiske-understøttelse er på plads. Det betyder, at du kan spille det første afsnit af spillet, men ikke komme videre, når spillet beder om disk 2.' },
+      { platform: 'Amiga', label: 'Naughty Ones (AGA)', page: 'amiga-emulator.html', rom: 'roms/amiga/naughty_ones/Naughty Ones (1994)(Interactivision)(AGA)[cr PDX].adf', title: 'Naughty Ones (1994, Interactivision)', bios: 'amiga/kick40068.A1200', model: 'A1200' },
+      { platform: 'Amiga', label: 'Guldkorn Expressen (AGA)', page: 'amiga-emulator.html', rom: 'roms/amiga/guldkorn_expressen/Guldkorn Expressen (1991)(Silverrock)(Dk)[f AGA CRX].adf', title: 'Guldkorn Expressen (1991, Silverrock)', bios: 'amiga/kick40068.A1200', model: 'A1200' },
+      { platform: 'Amiga', label: 'Harald Hardtand', page: 'amiga-emulator.html', rom: 'roms/amiga/harald_hardtand/Harald Hardtand (1992)(Silverrock)(Da)[cr CSL].adf', title: 'Harald Hardtand (1992, Silverrock)' },
+      { platform: 'Flash', label: 'Mufafa spillet', page: 'flash-emulator.html', rom: 'roms/flash/perkerspillet.swf', title: 'Mufafa spillet' },
     ];
 
     // Renders EMULATED_GAMES as one column per platform (in first-seen
@@ -374,16 +380,16 @@
       if (!container) return;
 
       const byPlatform = new Map();
-      for (const game of EMULATED_GAMES) {
+      EMULATED_GAMES.forEach((game, idx) => {
         if (!byPlatform.has(game.platform)) byPlatform.set(game.platform, []);
-        byPlatform.get(game.platform).push(game);
-      }
+        byPlatform.get(game.platform).push(idx);
+      });
 
       let html = '';
-      for (const [platform, games] of byPlatform) {
+      for (const [platform, indices] of byPlatform) {
         html += `<div class="emu-column"><div class="emu-column-header">${escapeHtml(platform)}</div>`;
-        for (const game of games) {
-          html += `<a href="#" class="emu-game-link" data-url="${escapeHtml(game.url)}">${escapeHtml(game.label)}</a>`;
+        for (const idx of indices) {
+          html += `<a href="#" class="emu-game-link" data-idx="${idx}">${escapeHtml(EMULATED_GAMES[idx].label)}</a>`;
         }
         html += `</div>`;
       }
@@ -392,9 +398,26 @@
       container.querySelectorAll('.emu-game-link').forEach(el => {
         el.addEventListener('click', (e) => {
           e.preventDefault();
-          openEmulatedGame(el.getAttribute('data-url'));
+          const idx = parseInt(el.getAttribute('data-idx'), 10);
+          openEmulatedGame(buildEmuUrl(EMULATED_GAMES[idx]));
         });
       });
+    }
+
+    // Builds the actual (percent-encoded) URL for a game entry at the moment
+    // it's needed, from the plain/unencoded fields in EMULATED_GAMES. `rom`
+    // and `bios` are file paths, so encodeURI is used for them (it leaves
+    // "/" alone); everything else is a plain text value, so encodeURIComponent
+    // is used (it also safely escapes "&", "=", "#", etc. in freeform text
+    // like the `edition` note).
+    function buildEmuUrl(game) {
+      const parts = [];
+      if (game.rom !== undefined) parts.push('rom=' + encodeURI(game.rom));
+      if (game.title !== undefined) parts.push('title=' + encodeURIComponent(game.title));
+      if (game.bios !== undefined) parts.push('bios=' + encodeURI(game.bios));
+      if (game.model !== undefined) parts.push('model=' + encodeURIComponent(game.model));
+      if (game.edition !== undefined) parts.push('edition=' + encodeURIComponent(game.edition));
+      return parts.length ? `${game.page}?${parts.join('&')}` : game.page;
     }
 
     function openEmulatedGame(url) {
