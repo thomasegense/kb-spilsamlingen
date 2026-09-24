@@ -133,7 +133,10 @@
   // just by linking to it with different parameters, e.g.:
   //   c64-emulator.html?rom=roms/c64/SOMEGAME.T64&title=Some+Game+(1988)
   const params = new URLSearchParams(location.search);
-  const rom = params.get('rom') || 'roms/c64/TIGERMI1.T64';
+  // encodeURI() re-escapes characters like "[" "]" that URLSearchParams.get()
+  // decodes back to literal — needed for any future filename containing
+  // them (Tomcat's strict request-target parser 400s on raw brackets).
+  const rom = encodeURI(params.get('rom') || 'roms/c64/TIGERMI1.T64');
   const title = params.get('title') || 'Tiger Mission (1987, Kele Line)';
   const core = params.get('core') || 'c64';
 

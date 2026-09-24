@@ -146,7 +146,11 @@
   async function boot() {
     const initFs = [];
     for (const name of fileList) {
-      const resp = await fetch(dir + '/' + name);
+      // encodeURI() re-escapes characters like "[" "]" that URLSearchParams.get()
+      // decodes back to literal — needed for any future dir/filename
+      // containing them (Tomcat's strict request-target parser 400s on raw
+      // brackets).
+      const resp = await fetch(encodeURI(dir + '/' + name));
       if (!resp.ok) {
         throw new Error('Kunne ikke hente ' + name + ' (' + resp.status + ')');
       }

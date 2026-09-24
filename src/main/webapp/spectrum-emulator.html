@@ -125,7 +125,10 @@
   // it with different parameters, e.g.:
   //   spectrum-emulator.html?rom=roms/spectrum/SOMEGAME.z80&title=Some+Game+(1988)&machine=48
   const params = new URLSearchParams(location.search);
-  const rom = params.get('rom') || 'roms/spectrum/Buggy_Boy_1988_Elite_Systems_a_128K.z80';
+  // encodeURI() re-escapes characters like "[" "]" that URLSearchParams.get()
+  // decodes back to literal — needed for any future filename containing
+  // them (Tomcat's strict request-target parser 400s on raw brackets).
+  const rom = encodeURI(params.get('rom') || 'roms/spectrum/Buggy_Boy_1988_Elite_Systems_a_128K.z80');
   const title = params.get('title') || 'Buggy Boy (1988, Elite Systems, 128K)';
   // machine: 48 (48K), 128 (128K), 5 (Pentagon). JSSpeccy also auto-switches
   // machine type when a snapshot file itself specifies one, so this default

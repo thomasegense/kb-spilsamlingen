@@ -122,7 +122,10 @@
   // linking to it with different parameters, e.g.:
   //   flash-emulator.html?rom=roms/flash/SOMEGAME.swf&title=Some+Game+(2005)
   const params = new URLSearchParams(location.search);
-  const rom = params.get('rom') || 'roms/flash/perkerspillet.swf';
+  // encodeURI() re-escapes characters like "[" "]" that URLSearchParams.get()
+  // decodes back to literal — needed for any future filename containing
+  // them (Tomcat's strict request-target parser 400s on raw brackets).
+  const rom = encodeURI(params.get('rom') || 'roms/flash/perkerspillet.swf');
   const title = params.get('title') || 'Mufafa spillet';
 
   document.getElementById('pageTitle').textContent = title + ' – Flash Emulator';

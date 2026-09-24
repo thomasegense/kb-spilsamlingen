@@ -113,7 +113,7 @@
       <tr><td class="key">F11</td><td>Fuldskærm.</td></tr>
     </table>
     <p class="note"><strong>Rigtig joystick/gamepad?</strong> Denne emulator er lavet til at blive styret med et joystick, og et rigtigt USB- eller Bluetooth-gamepad forbundet til computeren virker direkte via browserens Gamepad-API — ingen opsætning nødvendig. Det giver en markant mere "rigtig" oplevelse end piletaster + X, særligt til et hurtigt shoot-'em-up som dette.</p>
-    <p class="note">Emulatoren er <a href="https://emulatorjs.org/" target="_blank" rel="noopener">EmulatorJS</a> med PUAE-kernen (<code>amiga</code>) — en Amiga 500-emulator baseret på (P-)UAE. Kickstart-ROM'en (BIOS'en) hentes fra <code>amiga/</code>-mappen og er ikke en del af selve spilfilen; den skal findes/leveres separat af licensmæssige årsager (Kickstart er stadig ophavsretligt beskyttet af Cloanto/Hyperion).</p>
+    <p class="note">Emulatoren er <a href="https://emulatorjs.org/" target="_blank" rel="noopener">EmulatorJS</a> med PUAE-kernen (<code>amiga</code>) — en Amiga-emulator baseret på (P-)UAE, der kan emulere flere modeller (Amiga 500 som standard her, Amiga 1200/AGA for nyere spil der kræver det). Hvilken model der bruges afhænger af det enkelte spil. Kickstart-ROM'en (BIOS'en) hentes fra <code>amiga/</code>-mappen og er ikke en del af selve spilfilen; den skal findes/leveres separat af licensmæssige årsager (Kickstart er stadig ophavsretligt beskyttet af Cloanto/Hyperion).</p>
     <p class="note" id="editionNote"><strong>Om denne udgave:</strong> Battle Squadron blev oprindeligt udgivet på 2 disketter. Denne emulatorside bruger en enkelt-diskette-udgave (crack af "Captain Paranoia", uden trainer/snyd-koder) frem for det originale 2-diskette-sæt, fordi EmulatorJS' diskette-skift-understøttelse til Amiga-kernen p.t. er ustabil på tværs af browsere. Selve spiloplevelsen er uændret i forhold til originalen.</p>
     <p class="note"><strong>Ingen lyd?</strong> Tjek højtaler-/lydstyrke-ikonet i emulatorens egen værktøjslinje (ikke kun browserens/computerens lydstyrke).</p>
   </div>
@@ -125,14 +125,23 @@
   // games later just by linking to it with different parameters, e.g.:
   //   amiga-emulator.html?rom=roms/amiga/SOMEGAME.adf&title=Some+Game+(1990)&bios=amiga/kick37175.A500...
   const params = new URLSearchParams(location.search);
-  const rom = params.get('rom') || 'roms/amiga/Battle_Squadron.adf';
+  // URLSearchParams.get() decodes the query value back to literal
+  // characters (spaces, parentheses, brackets, ...). That's fine for
+  // display, but re-encoding with encodeURI() before it's used as an
+  // actual fetch URL matters: some scene-release filenames contain "[" "]"
+  // (e.g. "[cr PDX]"), and those are invalid unencoded in a request path
+  // per RFC 3986 — Tomcat's strict request-target parser rejects them with
+  // an HTTP 400, not a 404, which is what tipped this off. encodeURI()
+  // leaves "/" alone (so the path structure survives) while escaping the
+  // characters that actually need it.
+  const rom = encodeURI(params.get('rom') || 'roms/amiga/Battle_Squadron.adf');
   const title = params.get('title') || 'Battle Squadron (1989, Innerprise Software)';
   const core = params.get('core') || 'amiga';
   // Default to the Kickstart 1.3 ROM: that's the correct boot ROM for a
   // stock Amiga 500, which is what this game (and most 1989-era Amiga
   // titles) targets. A Kickstart 2.04 ROM (A500+) is also available in the
   // amiga/ folder for later titles that may need it.
-  const bios = params.get('bios') || 'amiga/kick34005.A500';
+  const bios = encodeURI(params.get('bios') || 'amiga/kick34005.A500');
 
   document.getElementById('pageTitle').textContent = title + ' – Amiga Emulator';
   document.getElementById('gameTitle').textContent = title;
@@ -155,6 +164,16 @@
   window.EJS_volume = 0.7;
   // Deliberately NOT setting EJS_startOnLoaded: this keeps EmulatorJS's own
   // "click to play" overlay, which is required for the browser to allow audio.
+
+  // Optional per-game override of the PUAE core's "Model" option
+  // (puae_model), e.g. ?model=A1200 for AGA-chipset games that need an
+  // Amiga 1200 instead of the default A500. Left unset for existing A500
+  // games so their behavior doesn't change.
+  const model = params.get('model');
+  if (model) {
+    window.EJS_defaultOptions = window.EJS_defaultOptions || {};
+    window.EJS_defaultOptions.puae_model = model;
+  }
 </script>
 <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 
