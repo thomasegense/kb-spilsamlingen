@@ -372,6 +372,7 @@
       { platform: 'Amiga', label: 'Persian gulf inferno', page: 'amiga-emulator.html', rom: 'roms/amiga/persian_gulf_inferno/persiang.adf', title: 'Persian gulf inferno (1989, Parsec Software)' },
       { platform: 'Flash', label: 'Mujaffa spillet', page: 'flash-emulator.html', rom: 'roms/flash/perkerspillet.swf', title: 'Mujaffa spillet' },
       { platform: 'Commodore Plus/4', label: 'Det Mystiske Rumskib', page: 'plus4-emulator.html', rom: 'roms/c4plus/det_mystiske_rumskib.prg', title: 'Det Mystiske Rumskib' },
+      { platform: 'DOS', label: 'Indskolingsdisketten', page: 'dos-emulator.html', dir: 'dos/Indskolingsdisketten/GAME', exe: 'INDSKOL.EXE', title: 'Indskolingsdisketten (1991, Kroghs Forlag/Gunnar Lund)', files: ['ANTAL1.CML', 'ANTAL2.CML', 'ANTAL3.CML', 'ANTFIG.CML', 'BAGGRUND.DEF', 'BIL.CML', 'BLOMST.CML', 'BOGST.CML', 'ELEFANT.CML', 'INDSKOL.EXE', 'KAM0.CML', 'KAM1.CML', 'KAM2.CML', 'KLODS.CML', 'KORT.CML', 'LANG.CML', 'LILLEB.CML', 'LILLEVOK.CML', 'MENU.CML', 'MIDTEN.CML', 'MUSIK.CML', 'ORD1.CML', 'ORD2.CML', 'ORD3.CML', 'ORD4.CML', 'ORD5.CML', 'ORD6.CML', 'ORD7.CML', 'ORD8.CML', 'ORD9.CML', 'ORM1.CML', 'ORM2.CML', 'POLYGON.CML', 'PRINTER.DEF', 'PROPPER.CML', 'PUSLE1.CML', 'PUSLE2.CML', 'PUSLE3.CML', 'PUSLE4.CML', 'PUSLE5.CML', 'PUSLE6.CML', 'PUSLE7.CML', 'PUSLE8.CML', 'SKUB.CML', 'SMAABOG.CML', 'SORTER.CML', 'SPEJL.CML', 'STOREB.CML', 'STOREBOG.CML', 'STREGER.CML', 'TEKSTBEH.CML', 'TERNING1.CML', 'TERNING2.CML', 'TERNING3.CML', 'TERNING4.CML', 'TID.CML', 'TYK.CML', 'TYND.CML', 'UR1.CML', 'UR2.CML', 'UR3.CML', 'UR4.CML', 'UR5.CML', 'UR6.CML', 'VOKALER.CML'] },
     ];
 
     // Renders EMULATED_GAMES as one column per platform (in first-seen
@@ -407,11 +408,14 @@
     }
 
     // Builds the actual (percent-encoded) URL for a game entry at the moment
-    // it's needed, from the plain/unencoded fields in EMULATED_GAMES. `rom`
-    // and `bios` are file paths, so encodeURI is used for them (it leaves
-    // "/" alone); everything else is a plain text value, so encodeURIComponent
-    // is used (it also safely escapes "&", "=", "#", etc. in freeform text
-    // like the `edition` note).
+    // it's needed, from the plain/unencoded fields in EMULATED_GAMES. `rom`,
+    // `bios`, and `dir` are file/folder paths, so encodeURI is used for them
+    // (it leaves "/" alone); everything else is a plain text value, so
+    // encodeURIComponent is used (it also safely escapes "&", "=", "#", etc.
+    // in freeform text like the `edition` note). `files` is a plain array of
+    // filenames (dos-emulator.html's mount list) — each one is encoded
+    // individually, then joined with a literal comma to match the `files=`
+    // param's comma-separated format.
     function buildEmuUrl(game) {
       const parts = [];
       if (game.rom !== undefined) parts.push('rom=' + encodeURI(game.rom));
@@ -419,6 +423,9 @@
       if (game.bios !== undefined) parts.push('bios=' + encodeURI(game.bios));
       if (game.model !== undefined) parts.push('model=' + encodeURIComponent(game.model));
       if (game.edition !== undefined) parts.push('edition=' + encodeURIComponent(game.edition));
+      if (game.dir !== undefined) parts.push('dir=' + encodeURI(game.dir));
+      if (game.exe !== undefined) parts.push('exe=' + encodeURIComponent(game.exe));
+      if (game.files !== undefined) parts.push('files=' + game.files.map(f => encodeURIComponent(f)).join(','));
       return parts.length ? `${game.page}?${parts.join('&')}` : game.page;
     }
 
